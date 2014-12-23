@@ -1,0 +1,3 @@
+[submodule "SDL12-kms-dispmanx"]
+	path = SDL12-kms-dispmanx
+	url = https://github.com/vanfanel/SDL12-kms-dispmanx.git
