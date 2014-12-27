@@ -1,16 +1,19 @@
-PREFIX	=/usr
+CROSS_COMPILE=arm-linux-gnueabihf-
+PREFIX=/usr
+STAGING_DIR=/opt/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/
+SYSROOT=/opt/raspbian
 
 #SDL_BASE = $(PREFIX)/bin/
-SDL_BASE = 
-MORE_CFLAGS += -DGP2X -DPANDORA -DDOUBLEBUFFER -DUSE_ARMNEON -DUSE_ARMV7 -DUSE_SDLSOUND
+SDL_BASE = ${SYSROOT}/${PREFIX}/bin/
+MORE_CFLAGS += -DGP2X -DPANDORA -DDOUBLEBUFFER -DUSE_ARMNEON -DUSE_ARMV7 -DUSE_SDLSOUND --sysroot=${SYSROOT}
 
 NAME   = uae4all
 O      = o
 RM     = rm -f
-#CC     = gcc
-#CXX    = g++
-#STRIP  = strip
-#AS     = as
+CC     = ${STAGING_DIR}${CROSS_COMPILE}gcc
+CXX    = ${STAGING_DIR}${CROSS_COMPILE}g++
+STRIP  = ${STAGING_DIR}${CROSS_COMPILE}strip
+AS     = ${STAGING_DIR}${CROSS_COMPILE}as
 
 PROG   = $(NAME)
 
@@ -21,13 +24,15 @@ FAME_CORE_C=1
 GUICHAN_GUI=1
 PANDORA=1
 
-DEFAULT_CFLAGS = `$(SDL_BASE)sdl-config --cflags`
-#LDFLAGS = -lSDL -lpthread  -lz -lSDL_image -lpng12 -L$(C64_TOOLS_ROOT)/libc64 -lc64
-LDFLAGS = -lSDL -lpthread  -lz -lSDL_image -lpng12
+DEFAULT_CFLAGS = `$(SDL_BASE)sdl-config --prefix=${SYSROOT}/usr --cflags`
+LDFLAGS = -L${SYSROOT}/opt/vc/lib  -lbcm_host -lvcos -lvchiq_arm -lguichan -lguichan_sdl -lSDL_image -lz -lpng -lpthread `sdl-config --prefix=${SYSROOT}/usr --libs` -lSDL_ttf
+MORE_CFLAGS += -I${SYSROOT}/opt/vc/include -I${SYSROOT}/opt/vc/include/interface/vmcs_host/linux -I${SYSROOT}/opt/vc/include/interface/vcos/pthreads
+#MORE_CFLAGS += -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
+#-DMENU_MUSIC
 
-MORE_CFLAGS +=   -Isrc -Isrc/gp2x -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
+MORE_CFLAGS += -Isrc -Isrc/gp2x -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
 ifdef GUICHAN_GUI
-LDFLAGS +=  -lSDL_ttf -lguichan_sdl -lguichan
+LDFLAGS += -lSDL_ttf -lguichan_sdl -lguichan
 MORE_CFLAGS += -fexceptions
 else
 MORE_CFLAGS += -fno-exceptions
@@ -36,7 +41,7 @@ endif
 
 MORE_CFLAGS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
 
-MORE_CFLAGS += -msoft-float -ffast-math
+MORE_CFLAGS += -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffast-math
 ifndef DEBUG
 MORE_CFLAGS += -O3
 MORE_CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fexpensive-optimizations
