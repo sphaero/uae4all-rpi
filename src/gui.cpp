@@ -506,16 +506,16 @@ void gui_handle_events (void)
 	dpadDown = keystate[SDLK_DOWN];
 	dpadLeft = keystate[SDLK_LEFT];
 	dpadRight = keystate[SDLK_RIGHT];
-	buttonA = keystate[SDLK_HOME];
-	buttonB = keystate[SDLK_END];
-	buttonX = keystate[SDLK_PAGEDOWN];
-	buttonY = keystate[SDLK_PAGEUP];
-	triggerL = keystate[SDLK_RSHIFT];
-	triggerR = keystate[SDLK_RCTRL];
-	buttonSelect = keystate[SDLK_LCTRL];
-	buttonStart = keystate[SDLK_LALT];
+	buttonA = keystate[SDLK_TAB];
+	buttonB = keystate[SDLK_RSHIFT];
+	buttonX = keystate[SDLK_LSHIFT];
+	buttonY = keystate[SDLK_SPACE];
+	triggerL = keystate[SDLK_PAGEUP];
+	triggerR = keystate[SDLK_PAGEDOWN];
+	buttonSelect = keystate[SDLK_F8];
+	buttonStart = keystate[SDLK_F7];
 
-	if(keystate[SDLK_LCTRL])
+	if(keystate[SDLK_F8])
 		goMenu();
 
 	if(keystate[SDLK_F12])
