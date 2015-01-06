@@ -1,6 +1,6 @@
  _________________________________________
 (                                         )
-(  - UAE4All 2.5.3.2  for Raspberry Pi -  )
+( - UAE4All 2.5.3.2-1  for Raspberry Pi - )
 (                                         )
  -----------------------------------------
           o
@@ -32,8 +32,7 @@ for rpi's videocore4 hardware scaling on the linux console.
 updated guichan libs included now too.
 
 what's new:
-- misc fixes
-- new blitter modes
+- new default-keymapping
 
 see repo.openpandora.org/?page=detail&app=uae4all
 for a complete changelog.
@@ -87,15 +86,19 @@ as this is an early version, here are some issues i found:
 - custom config doesn't work, controls are hardcoded to:
 
 in gui:
-- "esc" resets/loads a disk
-- "ctrl" switches to game
-- "directional keys/tab/enter" navigate gui
+- "esc" starts emu
+- "f8" switches to game
+- "directional keys/tab/enter" navigates gui
 
 in game:
-- "ctrl" switches back to gui
-- "alt" toggles input (joystick/mouse/stylus?)
+- "f8" switches to gui
+- "alt" toggles input (joystick/mouse/stylus)
 - "directional keys" for movement
-- "home/end/pgup/pgdown" for fire-buttons etc.
+- "f7" start-button
+- "left shift" fire
+- "tab" autofire
+- "right shift" right mousebutton
+- "page up/down" left/right triggers
 
 
 huge thanks to all the devs!
@@ -117,5 +120,4 @@ enjoy your shiny new amiga-on-a-pi!
 amiga-oldskool-love!
 rSl
 :)
-
 
