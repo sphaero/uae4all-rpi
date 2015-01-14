@@ -1,10 +1,12 @@
-CROSS_COMPILE=arm-linux-gnueabihf-
-PREFIX=/usr
-STAGING_DIR=/opt/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/
-SYSROOT=/opt/raspbian
+###############################################
+#  Set these vars to setup cross compiling 
+###############################################
+#CROSS_COMPILE=arm-linux-gnueabihf-
+#STAGING_DIR=/opt/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/
+#SYSROOT=/opt/raspbian
 
-#SDL_BASE = $(PREFIX)/bin/
-SDL_BASE = ${SYSROOT}/${PREFIX}/bin/
+PREFIX=/usr
+SDL_BASE = ${SYSROOT}${PREFIX}/bin/
 MORE_CFLAGS += -DGP2X -DPANDORA -DDOUBLEBUFFER -DUSE_ARMNEON -DUSE_ARMV7 -DUSE_SDLSOUND --sysroot=${SYSROOT}
 
 NAME   = uae4all
