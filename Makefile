@@ -1,13 +1,14 @@
+# UAE4All for Raspberry Pi Makefile
+
 ###############################################
 #  Set these vars to setup cross compiling 
 ###############################################
-#CROSS_COMPILE=arm-linux-gnueabihf-
-#STAGING_DIR=/opt/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/
-#SYSROOT=/opt/raspbian
+#CROSS_COMPILE = arm-linux-gnueabihf-
+#STAGING_DIR = /opt/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/
+#SYSROOT = /opt/raspbian
 
-PREFIX=/usr
+PREFIX = /usr/local
 SDL_BASE = ${SYSROOT}${PREFIX}/bin/
-MORE_CFLAGS += -DGP2X -DPANDORA -DDOUBLEBUFFER -DUSE_ARMNEON -DUSE_ARMV7 -DUSE_SDLSOUND --sysroot=${SYSROOT}
 
 NAME   = uae4all
 O      = o
@@ -15,56 +16,29 @@ RM     = rm -f
 CC     = ${STAGING_DIR}${CROSS_COMPILE}gcc
 CXX    = ${STAGING_DIR}${CROSS_COMPILE}g++
 STRIP  = ${STAGING_DIR}${CROSS_COMPILE}strip
-AS     = ${STAGING_DIR}${CROSS_COMPILE}as
 
 PROG   = $(NAME)
 
 all: $(PROG)
 
-FAME_CORE=1
-FAME_CORE_C=1
-GUICHAN_GUI=1
-PANDORA=1
-
-DEFAULT_CFLAGS = `$(SDL_BASE)sdl-config --prefix=${SYSROOT}/usr --cflags`
-LDFLAGS = -L${SYSROOT}/opt/vc/lib  -lbcm_host -lvcos -lvchiq_arm -lguichan -lguichan_sdl -lSDL_image -lz -lpng -lpthread `sdl-config --prefix=${SYSROOT}/usr --libs` -lSDL_ttf
+DEFAULT_CFLAGS = `$(SDL_BASE)sdl-config --prefix=${SYSROOT}$(PREFIX) --cflags`
+LDFLAGS = -L${SYSROOT}/opt/vc/lib -lbcm_host -lvcos -lvchiq_arm -lSDL_image -lz -lpng -lpthread `$(SDL_BASE)sdl-config --prefix=${SYSROOT}$(PREFIX) --libs` -lguichan_sdl -lguichan -lSDL_ttf
+MORE_CFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DDOUBLEBUFFER -DUSE_SDLSOUND --sysroot=${SYSROOT}
 MORE_CFLAGS += -I${SYSROOT}/opt/vc/include -I${SYSROOT}/opt/vc/include/interface/vmcs_host/linux -I${SYSROOT}/opt/vc/include/interface/vcos/pthreads
-#MORE_CFLAGS += -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
-#-DMENU_MUSIC
-
-MORE_CFLAGS += -Isrc -Isrc/gp2x -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
-ifdef GUICHAN_GUI
-LDFLAGS += -lSDL_ttf -lguichan_sdl -lguichan
-MORE_CFLAGS += -fexceptions
-else
-MORE_CFLAGS += -fno-exceptions
-endif
-
-
+MORE_CFLAGS += -Isrc -Isrc/gp2x -Isrc/menu -Isrc/include -Isrc/gp2x/menu -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT
+MORE_CFLAGS += -DUSE_GUICHAN -fexceptions -DUSE_EMULATED_JOYSTICK
 MORE_CFLAGS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
-
 MORE_CFLAGS += -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffast-math
+MORE_CFLAGS += -DUSE_FAME_CORE -DUSE_AUTOCONFIG -DUSE_ZFILE -DSAFE_MEMORY_ACCESS
+
 ifndef DEBUG
-MORE_CFLAGS += -O3
-MORE_CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fexpensive-optimizations
-MORE_CFLAGS += -fweb -frename-registers -fomit-frame-pointer
-#MORE_CFLAGS += -falign-functions=32 -falign-loops -falign-labels -falign-jumps
-MORE_CFLAGS += -falign-functions=32
-MORE_CFLAGS += -finline -finline-functions -fno-builtin
-#MORE_CFLAGS += -S
+MORE_CFLAGS += -O2 -mstructure-size-boundary=32 -falign-functions=32 -finline-functions -fno-builtin
 else
 MORE_CFLAGS += -ggdb
 endif
 
-ASFLAGS += -mfloat-abi=soft
-
-MORE_CFLAGS+= -DUSE_AUTOCONFIG
-MORE_CFLAGS+= -DUSE_ZFILE
-# Turrican3 becomes unstable if this is not enabled
-MORE_CFLAGS+= -DSAFE_MEMORY_ACCESS
-#MORE_CFLAGS+= -DDEBUG_SAVESTATE
-
-CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CPPFLAGS = $(CFLAGS)
 
 OBJS =	\
 	src/audio.o \
@@ -92,11 +66,10 @@ OBJS =	\
 	src/memory.o \
 	src/missing.o \
 	src/native2amiga.o \
-	src/neon_helper.o \
 	src/gui.o \
 	src/od-joy.o \
 	src/scsi-none.o \
-	src/sound_gp2x.o \
+	src/sound_sdl_new.o \
 	src/sdlgfx.o \
 	src/writelog.o \
 	src/zfile.o \
@@ -107,10 +80,8 @@ OBJS =	\
 	src/gp2x/inputmode.o \
 	src/gp2x/menu/menu_helper.o \
 	src/gp2x/menu/menu_config.o \
-	src/gp2x/menu/menu.o
-ifdef GUICHAN_GUI
-CFLAGS+= -DUSE_GUICHAN
-OBJS += src/menu_guichan/menu_guichan.o \
+	src/gp2x/menu/menu.o \
+	src/menu_guichan/menu_guichan.o \
 	src/menu_guichan/menuTabMain.o \
 	src/menu_guichan/menuTabFloppy.o \
 	src/menu_guichan/menuTabHD.o \
@@ -122,36 +93,12 @@ OBJS += src/menu_guichan/menu_guichan.o \
 	src/menu_guichan/menuLoad_guichan.o \
 	src/menu_guichan/menuConfigManager.o \
 	src/menu_guichan/uaeradiobutton.o \
-	src/menu_guichan/uaedropdown.o
-ifdef PANDORA
-OBJS += src/menu_guichan/sdltruetypefont.o
-endif
-else
-OBJS += src/gp2x/menu/menu_fileinfo.o \
-	src/gp2x/menu/menu_load.o \
-	src/gp2x/menu/menu_main.o \
-	src/gp2x/menu/menu_savestates.o \
-	src/gp2x/menu/menu_misc.o \
-	src/gp2x/menu/menu_controls.o \
-	src/gp2x/menu/menu_display.o \
-	src/gp2x/menu/menu_memory_disk.o
-endif
+	src/menu_guichan/uaedropdown.o \
+	src/m68k/fame/famec.o \
+	src/m68k/fame/m68k_intrf.o \
+	src/m68k/m68k_cmn_intrf.o
 
-
-CFLAGS+= -DUSE_FAME_CORE
-CFLAGS+= -DWITH_TESTMODE
-
-src/m68k/fame/famec.o: src/m68k/fame/famec.cpp
-OBJS += src/m68k/fame/famec.o
-OBJS += src/m68k/fame/m68k_intrf.o
-OBJS += src/m68k/m68k_cmn_intrf.o
-
-CPPFLAGS  = $(CFLAGS)
-
-src/neon_helper.o: src/neon_helper.s
-	$(CXX) -O3 -pipe -falign-functions=32 -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -Wall -o src/neon_helper.o -c src/neon_helper.s
-
-$(PROG): $(OBJS)
+$(PROG): $(OBJS) 
 	$(CXX) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS)
 ifndef DEBUG
 	$(STRIP) $(PROG)
@@ -159,3 +106,4 @@ endif
 
 clean:
 	$(RM) $(PROG) $(OBJS)
+
