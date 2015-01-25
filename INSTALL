@@ -6,3 +6,54 @@ $ sudo apt-get install libsdl1.2-dev libsdl-image1.2-dev \
 - Build uae4all:
 
 $ make
+
+
+# From scratch
+
+## clone the git repo:
+
+git clone https://github.com/sphaero/uae4all-rpi.git
+cd uae4all-rpi
+git init submodules
+git update submodules
+
+## Build SDL (dispmanx)
+
+cd SDL12-kms-dispmanx
+./MAC_ConfigureDISPMANX.sh
+make && sudo make install
+
+## Get extra SDL libs
+
+wget https://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz
+tar -xzf SDL_image-1.2.12.tar.gz
+cd SDL_image-1.2.12
+./autogen.sh && ./configure && make
+sudo make install
+
+wget https://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-2.0.11.tar.gz
+tar -xzf SDL_ttf-2.0.11.tar.gz 
+cd SDL_ttf-2.0.11/
+./autogen.sh && ./configure
+make && sudo make install
+
+wget http://www.ferzkopp.net/Software/SDL_gfx-2.0/SDL_gfx-2.0.25.tar.gz
+tar -xzf SDL_gfx-2.0.25.tar.gz
+cd SDL_gfx-2.0.25/
+./autogen.sh && ./configure --disable-mmx && make
+sudo make install
+sudo cp /usr/local/include/SDL/* /usr/include/SDL/
+
+## Get guichan
+
+git clone https://github.com/r-s-l/guichan
+#wget http://guichan.googlecode.com/files/guichan-0.8.2.tar.gz
+cd guichan
+./configure CFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads" LDFLAGS="-L/opt/vc/lib  -lbcm_host -lvcos -lvchiq_arm"
+# had to copy SDL_image includes
+sudo cp /usr/local/include/SDL/* /usr/include/SDL/
+make && sudo make install
+
+## Compile uae4all-rpi
+
+make
