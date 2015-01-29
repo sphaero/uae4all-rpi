@@ -1,8 +1,54 @@
-- Install required packages:
+# From scratch
 
-$ sudo apt-get install libsdl1.2-dev libsdl-image1.2-dev \
-  libsdl-gfx1.2-dev libsdl-ttf2.0-dev libguichan-dev
+## Clone the uae4all-rpi git repo
 
-- Build uae4all:
+git clone https://github.com/sphaero/uae4all-rpi.git
+cd uae4all-rpi
+git init submodules
+git update submodules
 
-$ make
+## Build SDL (dispmanx)
+
+cd SDL12-kms-dispmanx
+./MAC_ConfigureDISPMANX.sh
+make && sudo make install
+
+## Build guichan (patched)
+
+cd guichan
+./configure
+make && sudo make install
+
+## Get and build SDL_image
+
+wget https://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz
+tar -xzf SDL_image-1.2.12.tar.gz
+cd SDL_image-1.2.12
+./autogen.sh && ./configure
+make && sudo make install
+
+## Get and build SDL_ttf
+
+wget https://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-2.0.11.tar.gz
+tar -xzf SDL_ttf-2.0.11.tar.gz
+cd SDL_ttf-2.0.11/
+./autogen.sh && ./configure
+make && sudo make install
+
+## Get and build SDL_gfx
+
+wget http://www.ferzkopp.net/Software/SDL_gfx-2.0/SDL_gfx-2.0.25.tar.gz
+tar -xzf SDL_gfx-2.0.25.tar.gz
+cd SDL_gfx-2.0.25/
+./autogen.sh && ./configure --disable-mmx
+make && sudo make install
+
+You may need the following devlibs installed too, so
+
+```
+sudo apt-get install libpng12-dev libwebp-dev zlib1g-dev
+```
+
+## Finally compile uae4all
+
+make
